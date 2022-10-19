@@ -3,8 +3,9 @@ import express from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
-
 import Router from "./routes/Routes.js";
+import handlebar from "express3-handlebars";
+const handlebars = handlebar.create({ defaultLayout: "layout" });
 
 import { fileURLToPath } from "url";
 
@@ -17,6 +18,13 @@ const app = express();
 
 import sequelize from "./DB/model.js";
 
+//////////// SETTING UP HANDLEBARS ////////////////
+
+app.engine("handlebars", handlebars.engine);
+app.set("view engine", "hbs");
+
+/////////////////////////////////////////////////////
+
 ////// TESTING CONNECTION  ////////
 
 try {
@@ -26,9 +34,7 @@ try {
     console.log("Unable to connect", error);
 }
 
-// view engine setup
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "hbs");
+/////////////////////////////
 
 app.use(logger("dev"));
 
@@ -37,9 +43,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+////////// ROUTERS ///////////////////////
+
 // app.use("/", );
 // app.use("/users", usersRouter);
 // app.use(new Router(err, req, res, next))
+
+//////////////////////////////////////
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
