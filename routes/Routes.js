@@ -4,8 +4,6 @@ import path from "path";
 
 class Validate {
     constructor(element, index) {
-        this.element = element;
-        this.index = index;
         this.controller(element, index);
     }
 
@@ -32,6 +30,21 @@ class Validate {
             );
         }
     }
+
+    photo(element) {
+        const allowedImageTypes = [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/jpg",
+        ];
+
+        if (!allowedImageTypes.includes(element.type)) {
+            throw new Error("Incorrect format");
+        }
+        if (element.size > 1024 * 2) throw new Error("Maximum size exceeded");
+    }
+
     validLength(element) {
         if (element.length > 1) {
             if (element.length < 30) {
@@ -46,6 +59,9 @@ class Validate {
 
     controller(element, index) {
         switch (index) {
+            case 1:
+                this.photo(element);
+                break;
             case 3:
                 this.bio(element);
                 break;
@@ -53,8 +69,7 @@ class Validate {
                 this.email(element);
                 this.validLength(element);
                 break;
-            case 1:
-            case 2:
+            case 0:
                 this.name(element);
                 this.validLength(element);
                 break;
@@ -64,27 +79,32 @@ class Validate {
 
 class Router {
     constructor(err, req, res, next) {
-        this.err = err;
-        this.req = req;
-        this.id = null;
-        this.res = res;
-        this.next = next;
         this.controller(err, req, res, next);
-        this.refreshArray();
     }
 
-    static array = [];
-
     controller(req, res, next) {
-        switch (req.url) {
-            case "/":
-                this.home(req, res);
+        req.method = req.url.toUpperCase();
+        switch (req.url + " | " + req.method) {
+            case "/ | GET":
+                this.home(res);
                 break;
-            case "/addUser":
+            case "/user | GET":
+                this.user(req, res, next);
+                break;
+            case "/users | GET":
+                this.users(req, res);
+                break;
+            case "/users | DELETE":
+                this.delete(req, res);
+                break;
+            case "/addUser | POST":
                 this.addUser(req, res, next);
                 break;
-            case "/users":
-                this.users(req, res);
+            case "/addUser | PUT":
+                this.update(req, res);
+                break;
+            case "/edit | GET":
+                this.edit(req, res, next);
                 break;
 
             default:
@@ -92,60 +112,80 @@ class Router {
         }
     }
 
-    home(req, res) {
+    home(res) {
         res.sendFile(path.resolve("public", "index.html"));
         return;
     }
 
     addUser(req, res, next) {
-        const { firstName, lastName, email, bio } = req.body;
-        [firstName, lastName, email, bio].forEach(new Validate());
-        User.create({ firstName, lastName, email, bio })
-            .then(this.render)
-            .catch(next);
+        const { fullName, photo, email, bio } = req.body;
+        [fullName, photo, email, bio].forEach(
+            (element, index) => new Validate(element, index)
+        );
+        User.create({ fullName, photo, email, bio })
+            .then(() => res.json(JSON.stringify({ Success: true })))
+            .catch(() => {
+                res.json(JSON.stringify({ Success: false }));
+                next();
+            });
     }
 
-    users() {
-        this.array.forEach(this.render);
-    }
-
-    async render() {
-        await this.refreshArray();
-        const array = this.array;
-        this.res.render("users", { array });
-    }
-
-    async refreshArray() {
-        this.array = await User.findAll();
+    async users(req, res) {
+        try {
+            const users = await User.findAll();
+            res.json(JSON.stringify(users));
+        } catch (error) {
+            throw new Error("Database Failure: Fetching Data Failed");
+        }
     }
 
     delete(req, res) {
         const { email } = req.params;
-        User.destroy({
-            where: { email },
-        })
-            .then(render)
-            .catch(next);
+
+        try {
+            User.destroy({
+                where: { email },
+            });
+
+            res.json(JSON.stringify({ Success: true }));
+        } catch (error) {
+            throw new Error("Database Failure: Deleting Failed");
+        }
     }
 
-    edit(req, res) {
-        const { firstName, lastName, bio, email } = req.query;
+    edit(req, res, next) {
+        const { email } = req.query;
         let user = User.findOne({ email }).catch(next);
-        this.id = user.id;
-        res.render("add-user", { firstName, lastName, email, bio });
+        const { fullName, photo, bio } = user;
+        res.render("user", { fullName, photo, email, bio });
+    }
+
+    user(req, res, next) {
+        const { email } = req.query;
+        let user = User.findOne({ email }).catch(next);
+        const { fullName, photo, bio } = user;
+        res.render("user", { fullName, photo, email, bio });
     }
     update(req, res) {
-        const { firstName, lastName, email, bio } = req.body;
+        const { fullName, photo, email, bio } = req.body;
+        [fullName, photo, email, bio].forEach(
+            (element, index) => new Validate(element, index)
+        );
         User.update(
-            { firstName, lastName, email, bio },
+            { fullName, photo, email, bio },
             {
                 where: {
-                    id: this.id,
+                    email: email,
                 },
             }
         )
-            .then(this.users)
-            .catch(next);
+            .then(() => {
+                res.json(JSON.stringify({ Success: true }));
+            })
+            .catch(() => {
+                res.json(JSON.stringify({ Success: false }));
+                next();
+            });
     }
 }
 
