@@ -1,0 +1,58 @@
+main {
+    overflow-x: hidden;
+    &.home {
+        background: linear-gradient(315deg, #2b2727, transparent);
+        padding: 20px 10px;
+        height: 90vh;
+        display: flex;
+
+        .img {
+            padding: 0 10px;
+
+            img {
+                border-radius: 5px;
+                height: 100%;
+                width: auto;
+                object-fit: cover;
+            }
+        }
+
+        .text {
+            line-height: 30px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            align-content: center;
+            justify-content: space-between;
+
+            h2 {
+                margin: 10px;
+                font-size: $font-size * 2;
+                color: $success-color;
+            }
+
+            p {
+                color: $dark-color;
+                margin: 20px;
+            }
+
+            button {
+                background-color: $primary-color;
+                height: 40px;
+                width: 70%;
+                border: none;
+                border-radius: 5px;
+                margin: 0 auto;
+                font-size: $font-size * 1.2;
+                font-weight: 500;
+                color: $light-color;
+
+                &:hover {
+                    background-color: lighten($primary-color, 10%);
+                    box-shadow: $dark-color;
+                }
+            }
+        }
+    }
+}

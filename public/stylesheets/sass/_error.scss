@@ -1,0 +1,33 @@
+main.error {
+    height: 70vh;
+    max-height: "fit-content";
+
+    text-align: center;
+
+    h1 {
+        color: $danger-color;
+        font-weight: 800;
+        font-size: $font-size * 2;
+        margin: 4rem 0 2rem 0;
+    }
+
+    button {
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        border: none;
+        margin: 1rem 0;
+        background-color: $primary-color;
+        a {
+            color: $light-color;
+            text-decoration: none;
+        }
+
+        &:hover {
+            background-color: lighten($primary-color, 10%);
+
+            &:active {
+                box-shadow: $secondary-color 0px 0px 3px 3px;
+            }
+        }
+    }
+}

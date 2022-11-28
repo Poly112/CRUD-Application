@@ -1,0 +1,65 @@
+<main class="addUser">
+    <div class="nav">
+        <p>
+            <a href="./index.html">Home</a>/
+            <a href="./user.html">User</a>
+        </p>
+    </div>
+    <div class="form">
+        <form action="./users.html" method="post">
+            <div class="input">
+                <div class="name">
+                    <input
+                        placeholder="Enter Name"
+                        name="Name"
+                        type="text"
+                        id="name"
+                    />
+                    <div class="error error-name"></div>
+                </div>
+                <div class="email">
+                    <input
+                        placeholder="Enter Email"
+                        name="Email"
+                        type="email"
+                        id="email"
+                    />
+                    <div class="error error-email"></div>
+                </div>
+            </div>
+            <div class="image">
+                <div class="image-preview">
+                    <img src="" alt="" id="image" />
+                    <span>Image Preview</span>
+                </div>
+                <!-- TODO type check if the content uploaded  is an image in your javascript -->
+                <input
+                    type="file"
+                    name="photo"
+                    placeholder="Upload picture"
+                    id="photo"
+                />
+                <div class="error error-image"></div>
+            </div>
+            <div class="textarea">
+                <textarea
+                    name="Bio"
+                    placeholder="Enter Bio"
+                    id="bio"
+                    cols="20"
+                    rows="10"
+                ></textarea>
+                <div class="error error-bio"></div>
+            </div>
+
+            <div class="button">
+                <a href="./users.html">
+                    <button type="submit">
+                        <i class="fas fa-circle-plus"></i>
+                        Add User
+                    </button>
+                </a>
+            </div>
+        </form>
+    </div>
+</main>

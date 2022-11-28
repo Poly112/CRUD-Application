@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="./stylesheets/dist/css/style.css" />
+        <script src="./javascripts/index.js" defer></script>
+        <script src="./javascripts/script.js" type="module" defer></script>
+        <link
+            rel="stylesheet"
+            href="./stylesheets/fontawesome-free-6.1.2-web/css/all.min.css"
+        />
+        <title>Users</title>
+    </head>
+    <body>
+        <header>
+            <div class="logo"><img src="./images/Logo.svg" alt="" /></div>
+
+            <i class="fa-solid fa-bars"></i>
+            <nav class="nav">
+                <i class="fa-solid fa-x"></i>
+                <div class="home"><a href="./index.html">Home</a></div>
+                <div class="add-user">
+                    <a href="./addUser.html">Add User</a>
+                </div>
+                <div class="users"><a href="./users.html">Users</a></div>
+            </nav>
+        </header>
+
+        <main class="users">
+            <div class="nav">
+                <p>
+                    <a href="./index.html">Home</a>/
+                    <a href="./users.html">Users</a>
+                </p>
+            </div>
+            <div class="button">
+                <a href="./addUser.html">
+                    <button type="button">
+                        <i class="fas fa-circle-plus"></i> Add User
+                    </button>
+                </a>
+            </div>
+            <div class="accordions">
+                <button class="accordion">
+                    <p>Nwaeke Polycarp Ikechukwu</p>
+                    <img src="./images/pexels-pixabay-220453 (1).jpg" alt="" />
+                </button>
+                <div class="panel">
+                    <label
+                        >Email
+                        <p>poly@gmail.com</p></label
+                    >
+                    <label
+                        >Bio
+                        <p>
+                            Lorem ipsum dolor sit amet consectetur adipisicing
+                            elit. Ratione vel temporibus omnis iusto vero sunt.
+                        </p>
+                    </label>
+                    <div class="action">
+                        <a href="#" class="delete-btn">
+                            <button type="button" class="delete">
+                                Delete
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </a>
+                        <a href="http://localhost:8080/edit" class="edit-btn">
+                            <button type="button" class="edit">
+                                Edit
+                                <i class="fas fa-plus-square"></i>
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <table>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Photo</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Action</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td class="photo">
+                        <img
+                            src="./images/pexels-pixabay-220453 (1).jpg"
+                            alt=""
+                        />
+                    </td>
+                    <td>Nwaeke Polycarp Ikechukwu</td>
+                    <td>poly@gmail.com</td>
+                    <td class="action">
+                        <a href="#" class="delete-btn">
+                            <button type="button" class="delete">
+                                Delete
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </a>
+                        <a href="./addUser.html " class="edit-btn">
+                            <button type="button" class="edit">
+                                Edit
+                                <i class="fas fa-plus-square"></i>
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+            </table>
+            <div class="info">
+                <p>
+                    <a class="prev" href="#">Prev</a>
+                    <span class="page">1/5</span>
+                    <a href="" class="next">Next</a>
+                </p>
+            </div>
+        </main>
+
+        <footer>
+            <div class="container">
+                <div class="logo">
+                    <img src="./images/Logo.svg" alt="" />
+                </div>
+                <div class="connect">
+                    <div>
+                        <a href="http://facebook.com">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                    </div>
+                    <div>
+                        <a href="http://twitter,com">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </div>
+                    <div>
+                        <a href="http://linkedin.com">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </div>
+                    <div>
+                        <a href="http://whatsapp.com">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="contact">
+                    <p>
+                        <i class="fas fa-address-book"></i> Nnewi, Anambra,
+                        Nigeria.
+                    </p>
+                    <p>
+                        <a href="mailto:polycarpnwaeke@gmail.com">
+                            <i class="fas fa-envelope"></i> Send Mail
+                        </a>
+                    </p>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; Copyright</p>
+            </div>
+        </footer>
+    </body>
+</html>

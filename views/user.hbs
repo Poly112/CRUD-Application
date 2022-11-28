@@ -1,0 +1,46 @@
+<main class="user">
+    <div class="nav">
+        <p>
+            <a href="./index.html">Home</a>/
+            <a href="./user.html">User</a>
+        </p>
+    </div>
+    <div class="container">
+        <div class="image">
+
+            {{!TODO GET IMAGE FROM DATABASE }}
+
+            <img src="{{image}}" alt="" />
+
+            {{! /////////////// }}
+        </div>
+        <div class="data">
+            <div class="profile">
+                <div class="biodata">
+                    <label for="name">
+                        Name
+                        <p id="name">
+                            Nwaeke Polycarp Ikechukwu
+                        </p>
+                    </label><label for="mail">Email
+                        <p id="email">poly@gmail.com</p>
+                    </label>
+                </div>
+                <div class="bio">
+                    <label for="bio">Bio
+                        <p id="bio">
+                            Lorem ipsum dolor sit amet consectetur adipisicing
+                            elit. Et, quia esse saepe quam sunt eveniet vel
+                            quasi numquam modi ratione?
+                        </p>
+                    </label>
+                </div>
+                <div class="edit">
+                    <a href="http:localhost:8080/edit"><button type="button">
+                            Edit
+                            <i class="fas fa-edit"></i></button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
