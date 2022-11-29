@@ -140,7 +140,7 @@ class Router {
     }
 
     delete(req, res) {
-        const { email } = req.params;
+        const { email } = req.query;
 
         try {
             User.destroy({
@@ -154,7 +154,8 @@ class Router {
     }
 
     edit(req, res, next) {
-        const { email } = req.query;
+        let { email } = req.query;
+        email = JSON.parse(email);
         let user = User.findOne({ email }).catch(next);
         const { fullName, photo, bio } = user;
         res.render("user", { fullName, photo, email, bio });

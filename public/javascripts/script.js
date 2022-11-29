@@ -1,5 +1,6 @@
 const deleteButton = document.querySelector(".delete-btn");
 
+const addUserButton = document.querySelector("#edit-btn");
 const editButton = document.querySelector(".edit-btn");
 
 const next = document.querySelector(".prev");
@@ -45,7 +46,7 @@ function validateName(element, index) {
     return false;
 }
 
-function photo(element) {
+function validatePhoto(element) {
     errorImage.innerHTML = "";
     errorImage.style.display = "none";
 
@@ -72,15 +73,114 @@ function photo(element) {
     ];
 
     if (!allowedImageTypes.includes(element.type)) {
-        throw new Error("Incorrect format");
+        errorImage.style.display = block;
+        error.textContent = "Allowed files are: [.jpeg, .png, .gif]";
+        return false;
     }
-    if (element.size > 1024 * 2) throw new Error("Maximum size exceeded");
+    if (element.size > 1024 * 1024 * 2) error.style.display = "block";
+    error.textContent = "File must be smaller tha n 2MB";
+    return false;
 }
 //////////////////////////////////////////
 
-form.addEventListener("submit", () => {
-    let name = document.querySelector("#name");
-    let email = document.querySelector("#email");
-    let photo = document.querySelector("#photo");
-    let bio = document.querySelector("#bio");
+const fullName = document.querySelector("#name");
+
+const email = document.querySelector("#email");
+const photo = document.querySelector("#photo");
+const bio = document.querySelector("#bio");
+
+fullName.addEventListener("change", () => {
+    if (!validateLength(fullName.value)) {
+        errorName.textContent = "Number of letters must be less than 30";
+        fullName.value = "";
+    } else {
+        if (!validateName(fullName.value)) {
+            errorName.textContent = "Name must be only letters";
+            fullName.value = "";
+        }
+    }
+});
+email.addEventListener("change", () => {
+    if (!validateLength(email.value)) {
+        errorEmail.textContent = "Number of letters must be less than 30";
+        email.value = "";
+    } else {
+        if (!validateEmail(email.value)) {
+            errorEmail.textContent = "Input a valid email please";
+            email.value = "";
+        }
+    }
+});
+bio.addEventListener("change", () => {
+    if (!validateBio(bio.value)) {
+        errorBio.textContent = "Bio must be letters or numbers";
+        bio.value = "";
+    }
+});
+
+photo.addEventListener("change", () => {
+    validatePhoto(photo);
+});
+
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const res = await fetch("http://localhost:8080/users");
+    const data = res.json();
+    data.forEach(({ email }) => {
+        if (email == email.value) {
+            errorEmail.textContent = "Email already exist";
+        } else {
+            form.submit();
+        }
+    });
+});
+
+///////////////////////////////////////////////////
+
+deleteButton.addEventListener("click", async (e) => {
+    const email = document
+        .querySelector("main.users")
+        .querySelector("#email").innerText;
+
+    const res = await fetch(
+        "http://localhost:8080/users" +
+            new URLSearchParams({
+                email,
+            }),
+        {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        }
+    );
+
+    const data = res.json();
+
+    if (data.Success) {
+        email.parentElement.parentElement.innerHTML = "";
+    } else {
+        alert("Delete unsuccessful");
+    }
+});
+
+editButton.addEventListener("click", async (e) => {
+    const email = document
+        .querySelector("main.users")
+        .querySelector("#email").innerText;
+
+    const res = await fetch(
+        "http://localhost:8080/edit" +
+            new URLSearchParams({
+                email,
+            })
+    );
+
+    const data = res.json();
+
+    if (data.Success) {
+        email.parentElement.parentElement.innerHTML = "";
+    } else {
+        alert("Delete unsuccessful");
+    }
 });
