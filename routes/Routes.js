@@ -88,7 +88,7 @@ class Router {
             case "/ | GET":
                 this.home(res);
                 break;
-            case "/user | GET":
+            case "/user:email | GET":
                 this.user(req, res, next);
                 break;
             case "/users | GET":
@@ -100,7 +100,7 @@ class Router {
             case "/addUser | POST":
                 this.addUser(req, res, next);
                 break;
-            case "/addUser | PUT":
+            case "/edit | PUT":
                 this.update(req, res);
                 break;
             case "/edit | GET":
@@ -154,15 +154,15 @@ class Router {
     }
 
     edit(req, res, next) {
-        let { email } = req.query;
-        email = JSON.parse(email);
+        const { email } = req.query;
+
         let user = User.findOne({ email }).catch(next);
         const { fullName, photo, bio } = user;
         res.render("user", { fullName, photo, email, bio });
     }
 
     user(req, res, next) {
-        const { email } = req.query;
+        const { email } = req.params;
         let user = User.findOne({ email }).catch(next);
         const { fullName, photo, bio } = user;
         res.render("user", { fullName, photo, email, bio });
