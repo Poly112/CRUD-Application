@@ -34,7 +34,7 @@ function validateEmail(element) {
 }
 
 function validateBio(element) {
-    if (/^[,\.\z:;\s]+$/i.test(element)) {
+    if (/^[,\.\w:'"()#;\s]+$/i.test(element)) {
         return true;
     }
     return false;

@@ -1,6 +1,13 @@
-import sequelize from "../DB/model.js";
-import { User } from "../DB/model.js";
-import path from "path";
+const fs = require("fs");
+const path = require("path");
+const router = require("express").Router();
+const User = require("../DB/model");
+const { pipeline, PassThrough, Transform } = require("stream");
+const { promisify } = require("util");
+const pipelineAsync = promisify(pipeline);
+// TODO Add the attribute enctype="multipart/form-data" to your form
+const multer = require("multer");
+const upload = multer({ storage: multer.memoryStorage() });
 
 class Validate {
     constructor(element, index) {
@@ -8,14 +15,14 @@ class Validate {
     }
 
     email(element) {
-        const result = /^[a-z\d]+@[a-z]+\.com$/i.test(element);
+        const result = /^[a-z\d\.-]+@[a-z]+\.com$/i.test(element);
 
         if (!result) {
             throw new Error("Invalid Email");
         }
     }
     bio(element) {
-        const result = /^[,\.\z:;\s]+$/i.test(element);
+        const result = /^[,\.\w:'"()#;\s]+$/i.test(element);
 
         if (!result) {
             throw new Error("Invalid Bio");
@@ -32,6 +39,9 @@ class Validate {
     }
 
     photo(element) {
+        if (element === "_") {
+            return;
+        }
         const allowedImageTypes = [
             "image/jpeg",
             "image/png",
@@ -39,10 +49,11 @@ class Validate {
             "image/jpg",
         ];
 
-        if (!allowedImageTypes.includes(element.type)) {
+        if (!allowedImageTypes.includes(element.mimetype)) {
             throw new Error("Incorrect format");
         }
-        if (element.size > 1024 * 2) throw new Error("Maximum size exceeded");
+        if (element.size > 1024 * 100 * 2)
+            throw new Error("Maximum size exceeded");
     }
 
     validLength(element) {
@@ -59,17 +70,18 @@ class Validate {
 
     controller(element, index) {
         switch (index) {
-            case 1:
+            case 2:
                 this.photo(element);
                 break;
-            case 3:
+            case 4:
                 this.bio(element);
                 break;
-            case 2:
+            case 3:
                 this.email(element);
                 this.validLength(element);
                 break;
             case 0:
+            case 1:
                 this.name(element);
                 this.validLength(element);
                 break;
@@ -78,116 +90,331 @@ class Validate {
 }
 
 class Router {
-    constructor(err, req, res, next) {
-        this.controller(err, req, res, next);
+    constructor(req, res, next) {
+        this.controller(req, res, next);
     }
 
     controller(req, res, next) {
-        req.method = req.url.toUpperCase();
+        req.method = req.method.toUpperCase();
+        const { email } = req.query;
+
         switch (req.url + " | " + req.method) {
-            case "/ | GET":
-                this.home(res);
-                break;
-            case "/user:email | GET":
+            case `/user?email=${email} | GET`:
                 this.user(req, res, next);
                 break;
             case "/users | GET":
-                this.users(req, res);
+                this.users(req, res, next);
                 break;
-            case "/users | DELETE":
-                this.delete(req, res);
+            case `/user?email=${email} | DELETE`:
+                this.delete(req, res, next);
                 break;
             case "/addUser | POST":
                 this.addUser(req, res, next);
                 break;
             case "/edit | PUT":
-                this.update(req, res);
+                this.update(req, res, next);
                 break;
-            case "/edit | GET":
+            case `/edit?email=${email} | GET`:
                 this.edit(req, res, next);
                 break;
 
             default:
-                throw new Error("Page doesn't exist");
+                return next();
         }
     }
 
-    home(res) {
-        res.sendFile(path.resolve("public", "index.html"));
-        return;
+    async addUser(req, res, next) {
+        const { firstName, lastName, email, bio } = req.body;
+
+        try {
+            if (req.file) {
+                [firstName, lastName, req.file, email, bio].forEach(
+                    (element, index) => new Validate(element, index)
+                );
+
+                // Get the file extension from the uploaded file
+                const fileExt = path.extname(req.file.originalname);
+                // Generate a unique filename using the current timestamp
+                const fileName = Date.now() + fileExt;
+                // Define the path where the image will be saved
+                const filePath = path.join(process.cwd(), "uploads", fileName);
+
+                // Write the file to the file system
+                await fs.promises.writeFile(filePath, req.file.buffer);
+
+                // Save the user data to the database
+                await User.create({
+                    firstName,
+                    lastName,
+                    photo: fileName,
+                    email,
+                    bio,
+                });
+            } else {
+                [firstName, lastName, "_", email, bio].forEach(
+                    (element, index) => new Validate(element, index)
+                );
+
+                await User.create({ firstName, lastName, email, bio });
+            }
+
+            return res.json({ Success: true });
+        } catch (error) {
+            return res.status(500).json({ Success: false, error });
+        }
     }
 
-    addUser(req, res, next) {
-        const { fullName, photo, email, bio } = req.body;
-        [fullName, photo, email, bio].forEach(
-            (element, index) => new Validate(element, index)
-        );
-        User.create({ fullName, photo, email, bio })
-            .then(() => res.json(JSON.stringify({ Success: true })))
-            .catch(() => {
-                res.json(JSON.stringify({ Success: false }));
-                next();
-            });
-    }
-
-    async users(req, res) {
+    async users(req, res, next) {
         try {
             const users = await User.findAll();
-            res.json(JSON.stringify(users));
-        } catch (error) {
-            throw new Error("Database Failure: Fetching Data Failed");
+            const userResponse = await Promise.all(
+                users.map(async (user) => {
+                    // Get the file path for the user's photo
+                    const photoPath = path.join(
+                        process.cwd(),
+                        "uploads",
+                        user.dataValues.photo ? user.dataValues.photo : ""
+                    );
+
+                    if (fs.existsSync(photoPath)) {
+                        // Read the file from the file system
+                        const data = await fs.promises.readFile(photoPath);
+
+                        // Create a base64 encoded data URL for the image
+                        const dataUrl = `data:image/jpeg;base64,${data.toString(
+                            "base64"
+                        )}`;
+
+                        return {
+                            id: user.dataValues.id,
+                            firstName: user.dataValues.firstName,
+                            lastName: user.dataValues.lastName,
+                            email: user.dataValues.email,
+                            bio: user.dataValues.bio,
+                            // Check if the photo file exists on the file system
+                            photo: dataUrl,
+                        };
+                    }
+
+                    return {
+                        id: user.dataValues.id,
+                        firstName: user.dataValues.firstName,
+                        lastName: user.dataValues.lastName,
+                        email: user.dataValues.email,
+                        bio: user.dataValues.bio,
+                        // Check if the photo file exists on the file system
+                        photo: null,
+                    };
+                })
+            );
+
+            return res.json({ Success: true, users: userResponse });
+        } catch (err) {
+            return res.status(500).json({ Success: false, err });
         }
     }
 
-    delete(req, res) {
+    async delete(req, res, next) {
         const { email } = req.query;
 
         try {
-            User.destroy({
+            const user = await User.findOne({
+                where: { email },
+                attributes: ["photo"],
+            });
+
+            if (user) {
+                const filePath = path.join(
+                    process.cwd(),
+                    "uploads",
+                    user.dataValues.photo
+                );
+                // Delete the file from the file system
+                if (fs.existsSync(filePath)) {
+                    await fs.promises.unlink(filePath);
+                }
+            }
+
+            await User.destroy({ where: { email } });
+
+            return res.json({ Success: true });
+        } catch (error) {
+            return next("Database Failure: Deleting Failed");
+        }
+    }
+
+    async edit(req, res, next) {
+        try {
+            const { email } = req.query;
+            let user;
+            try {
+                user = await User.findOne({
+                    where: { email },
+                });
+                if (!user) return next();
+            } catch (error) {
+                return next(error);
+            }
+
+            const { firstName, photo, lastName, bio } = user.dataValues;
+            if (photo) {
+                const fileName = photo;
+                const filePath = path.join(process.cwd(), "uploads", fileName);
+
+                try {
+                    const data = await fs.promises.readFile(filePath);
+                    const photoDataUrl = `data:image/png;base64,${data.toString(
+                        "base64"
+                    )}`;
+                    return res.render("edit", {
+                        firstName,
+                        lastName,
+                        email,
+                        bio,
+                        photo: photoDataUrl,
+                    });
+                } catch (error) {
+                    return next(error);
+                }
+            } else {
+                return res.render("edit", {
+                    firstName,
+                    lastName,
+                    email,
+                    bio,
+                });
+            }
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async user(req, res, next) {
+        const { email } = req.query;
+        let user;
+
+        try {
+            user = await User.findOne({
                 where: { email },
             });
 
-            res.json(JSON.stringify({ Success: true }));
+            if (!user) return next();
+            const { firstName, lastName, photo, bio } = user.dataValues;
+
+            if (photo) {
+                const filePath = path.join(process.cwd(), "uploads", photo);
+
+                try {
+                    // Read the file from the file system
+                    const data = await fs.promises.readFile(filePath);
+
+                    // Create a base64 encoded data URL for the image
+                    const dataUrl = `data:image/jpeg;base64,${data.toString(
+                        "base64"
+                    )}`;
+
+                    // Render the user view with the image data URL
+                    return res.render("user", {
+                        firstName,
+                        lastName,
+                        photo: dataUrl,
+                        email,
+                        bio,
+                    });
+                } catch (error) {
+                    return next(error);
+                }
+            } else {
+                // Render the user view without an image
+                return res.render("user", { firstName, lastName, email, bio });
+            }
         } catch (error) {
-            throw new Error("Database Failure: Deleting Failed");
+            return next(error);
         }
     }
 
-    edit(req, res, next) {
-        const { email } = req.query;
+    async update(req, res, next) {
+        const { firstName, lastName, email, oldEmail, bio } = req.body;
 
-        let user = User.findOne({ email }).catch(next);
-        const { fullName, photo, bio } = user;
-        res.render("user", { fullName, photo, email, bio });
-    }
-
-    user(req, res, next) {
-        const { email } = req.params;
-        let user = User.findOne({ email }).catch(next);
-        const { fullName, photo, bio } = user;
-        res.render("user", { fullName, photo, email, bio });
-    }
-    update(req, res) {
-        const { fullName, photo, email, bio } = req.body;
-        [fullName, photo, email, bio].forEach(
-            (element, index) => new Validate(element, index)
-        );
-        User.update(
-            { fullName, photo, email, bio },
-            {
-                where: {
-                    email: email,
-                },
-            }
-        )
-            .then(() => {
-                res.json(JSON.stringify({ Success: true }));
-            })
-            .catch(() => {
-                res.json(JSON.stringify({ Success: false }));
-                next();
+        // Check if an oldEmail was sent
+        if (oldEmail) {
+            // Check if the user is already part of the database
+            const alreadyExist = await User.findOne({
+                where: { email: oldEmail },
             });
+            console.log(alreadyExist);
+            // If the user isn't part of the database send a 404 error
+            if (!alreadyExist) return next();
+        } else {
+            return next();
+        }
+
+        try {
+            if (req.file) {
+                // Validate input fields
+                [firstName, lastName, req.file, email, bio].forEach(
+                    (element, index) => new Validate(element, index)
+                );
+
+                const photo = req.file.buffer;
+
+                // Get the file extension from the uploaded file
+                const fileExt = path.extname(req.file.originalname);
+                // Generate a unique filename using the current timestamp
+                const fileName = Date.now() + fileExt;
+                // Define the path where the image will be saved
+                const filePath = path.join(process.cwd(), "uploads", fileName);
+
+                // Delete the previous image from the file system
+                const { photo: oldPhoto } = await User.findOne({
+                    where: { email: oldEmail },
+                });
+                if (oldPhoto) {
+                    const oldFilePath = path.join(
+                        process.cwd(),
+                        "uploads",
+                        oldPhoto
+                    );
+                    await fs.promises.unlink(oldFilePath);
+                }
+
+                // Write the new file to the file system
+                await fs.promises.writeFile(filePath, photo);
+
+                // Update the user data in the database
+                await User.update(
+                    { firstName, lastName, photo: fileName, email: email, bio },
+                    {
+                        where: {
+                            email: oldEmail,
+                        },
+                    }
+                );
+
+                return res.json({ Success: true });
+            } else {
+                // Perform some validation
+                [firstName, lastName, "_", email, bio].forEach(
+                    (element, index) => new Validate(element, index)
+                );
+                // No new file was uploaded, so just update the user data in the database
+                await User.update(
+                    { firstName, lastName, email, bio },
+                    {
+                        where: {
+                            email: oldEmail,
+                        },
+                    }
+                );
+
+                return res.json({ Success: true });
+            }
+        } catch (error) {
+            return next(error);
+        }
     }
 }
 
-export default Router;
+module.exports = router.all("*", upload.single("photo"), (req, res, next) => {
+    new Router(req, res, next);
+});

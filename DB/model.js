@@ -1,39 +1,51 @@
-import { Sequelize, DataTypes, Model } from "sequelize";
-import dbConfig from "./dbConfig.js";
+"use strict";
+const { Model, Sequelize, DataTypes } = require("sequelize");
+const sequelize = require("./dbConfig");
 
-const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
-    host: dbConfig.HOST,
-    dialect: dbConfig.dialect,
-    operationsAliases: false,
-    pool: {
-        max: dbConfig.pool.max,
-        min: dbConfig.pool.min,
-        acquire: dbConfig.pool.acquire,
-        idle: dbConfig.pool.idle,
-    },
-});
+class User extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+        // define association here
+    }
+    toJSON() {
+        return { ...this.get(), id: undefined };
+    }
+}
+User.init(
+    {
+        // attributes
+        firstName: {
+            type: DataTypes.CHAR,
+            allowNull: false,
+        },
+        lastName: {
+            type: DataTypes.CHAR,
+            allowNull: false,
+        },
+        //TODO make email unique
+        email: {
+            type: DataTypes.CHAR,
+            allowNull: false,
+            unique: true,
+        },
 
-export const User = sequelize.define("User", {
-    // attributes
-    firstName: {
-        type: DataTypes.CHAR,
-        allowNull: false,
+        bio: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+        },
+        photo: {
+            type: DataTypes.CHAR,
+            allowNull: true,
+        },
     },
-    lastName: {
-        type: DataTypes.CHAR,
-        allowNull: false,
-    },
-    //TODO make email unique
-    email: {
-        type: DataTypes.CHAR,
-        allowNull: false,
-        unique: true,
-    },
+    { sequelize, modelName: "User" }
+);
 
-    bio: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-    },
-});
+// the defined model is the class itself
+// console.log(User === sequelize.models.User);
 
-export default sequelize;
+module.exports = User;

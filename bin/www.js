@@ -3,39 +3,78 @@
 /**
  * Module dependencies.
  */
+const app = require("../app");
+const http = require("http");
+const User = require("../DB/model");
+const sequelize = require("../DB/dbConfig");
 
-import app from "../app.js";
-import debugs from "debug";
-import http from "http";
-
-function changeDebug(param) {
-    return debugs(param);
-}
-let debug = changeDebug("crud-application:server");
 
 /**
  * Get port from environment and store in Express.
  */
-
 const port = normalizePort(process.env.PORT || "8080");
-app.set("port", port);
 
-/**
- * Create HTTP server.
- */
+app.set("port", port);
 
 const server = http.createServer(app);
 
+/////////////////////
 /**
- * Listen on provided port, on all network interfaces.
+ * Scaling with node clusters
  */
 
-server.listen(port);
-server.on("error", onError);
-server.on("listening", () => {
-    onListening();
-    console.log(`Listening on port ${port}`);
-});
+const cluster = require("cluster");
+const os = require("os");
+
+// Get number of CPUs
+const numCpu = os.cpus().length;
+
+if (cluster.isMaster) {
+    for (let i = 0; i < numCpu; i++) {
+        cluster.fork();
+
+        cluster.on("exit", () => {
+            cluster.fork();
+        });
+    }
+} else {
+    /////////////////////////////////////////////////////
+
+    ////// TESTING CONNECTION  ////////
+
+    const initDB = async () => {
+        console.log("Testing the database connection..");
+
+        await sequelize.authenticate();
+        console.log("Connection has been established successfully.");
+
+        // Synchronize the User model
+        await User.sync();
+    };
+
+    // Initialize the application
+    (async () => {
+        try {
+            try {
+                // Connect to the database and synchronize models
+                await initDB();
+            } catch (error) {
+                console.error("Error initializing application:", error);
+            }
+        } catch (error) {
+            console.error("Error initializing application:", error);
+        }
+    })();
+
+    // Start the server
+    server.listen(app.get("port"), () => {
+        console.log(`server started process ${process.pid} on port ${port}`);
+    });
+    server.on("error", onError);
+    server.on("listening", onListening);
+}
+
+/////////////////////////
 
 /**
  * Normalize a port into a number, string, or false.
@@ -63,7 +102,9 @@ function normalizePort(val) {
 
 function onError(error) {
     if (error.syscall !== "listen") {
-        throw error;
+        // throw error;
+        console.log(error);
+        return;
     }
 
     const bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
@@ -77,7 +118,7 @@ function onError(error) {
         case "EADDRINUSE":
             console.error(bind + " is already in use");
             process.exit(1);
-            break;
+
         default:
             throw error;
     }
@@ -91,5 +132,5 @@ function onListening() {
     const addr = server.address();
     const bind =
         typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
-    debug("Listening on " + bind);
+    console.log("Listening on " + bind);
 }
