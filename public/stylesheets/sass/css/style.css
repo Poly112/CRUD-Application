@@ -1,0 +1,665 @@
+@charset "UTF-8";
+* {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  list-style: none;
+  font-family: "Poppins", sans-serif;
+  outline: none;
+}
+
+main {
+  overflow-x: hidden;
+}
+main.home {
+  background: linear-gradient(315deg, #2b2727, transparent);
+  padding: 20px 10px;
+  height: 90vh;
+  display: flex;
+}
+main.home .img {
+  padding: 0 10px;
+}
+main.home .img img {
+  border-radius: 5px;
+  height: 100%;
+  width: auto;
+  object-fit: cover;
+}
+main.home .text {
+  line-height: 30px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-content: center;
+  justify-content: space-between;
+}
+main.home .text h2 {
+  margin: 10px;
+  font-size: 32px;
+  color: #14a44d;
+}
+main.home .text p {
+  color: #332d2d;
+  margin: 20px;
+}
+main.home .text button {
+  background-color: #3b71ca;
+  height: 40px;
+  width: 70%;
+  border: none;
+  border-radius: 5px;
+  margin: 0 auto;
+  font-size: 19.2px;
+  font-weight: 500;
+  color: #fbfbfb;
+}
+main.home .text button:hover {
+  background-color: #638ed5;
+  box-shadow: #332d2d;
+}
+
+main.error {
+  height: 70vh;
+  max-height: "fit-content";
+  text-align: center;
+}
+main.error h1 {
+  color: #dc4c64;
+  font-weight: 800;
+  font-size: 32px;
+  margin: 4rem 0 2rem 0;
+}
+main.error button {
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  border: none;
+  margin: 1rem 0;
+  background-color: #3b71ca;
+}
+main.error button a {
+  color: #fbfbfb;
+  text-decoration: none;
+}
+main.error button:hover {
+  background-color: #638ed5;
+}
+main.error button:hover:active {
+  box-shadow: #9fa6b2 0px 0px 3px 3px;
+}
+
+main.addUser {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  padding: 1.5rem 3rem;
+}
+main.addUser .nav {
+  text-align: start;
+}
+main.addUser .nav a {
+  font-size: 1.2rem;
+  text-decoration: none;
+}
+main.addUser .nav a:hover {
+  color: #3b71ca;
+}
+main.addUser .form form {
+  width: 100%;
+}
+main.addUser .form form .input {
+  margin: 20px 0;
+}
+main.addUser .form form .input .error {
+  margin: 0 1rem;
+  font-size: 14px;
+  color: #ff3333;
+}
+main.addUser .form form .input input {
+  margin: 1rem;
+  padding: 0.4rem 0.8rem;
+  width: 100%;
+}
+main.addUser .form form .image .image-preview {
+  width: 150px;
+  height: 150px;
+}
+main.addUser .form form .image .image-preview img {
+  display: none;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+main.addUser .form form .image input {
+  width: 100%;
+  padding: 1rem 0;
+}
+main.addUser .form form .textarea {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+main.addUser .form form .textarea textarea {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 5px;
+}
+main.addUser .form form .button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+main.addUser .form form .button button {
+  height: 2.5rem;
+  width: 8rem;
+  color: #fbfbfb;
+  font-size: 1.2rem;
+  background-color: #3b71ca;
+  border-radius: 5px;
+  border: none;
+}
+main.addUser .form form .button button:hover {
+  background-color: #638ed5;
+}
+main.addUser .form form .button button:hover:active {
+  box-shadow: #9fa6b2 0px 0px 3px 3px;
+}
+
+main.users {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  padding: 1.5rem 3rem;
+}
+main.users .nav {
+  text-align: start;
+  margin: 2rem 0;
+}
+main.users .nav a {
+  font-size: 1.2rem;
+  text-decoration: none;
+}
+main.users .nav a:hover {
+  color: #3b71ca;
+}
+main.users .button {
+  margin: 2rem 0;
+  text-align: end;
+}
+main.users .button a {
+  text-decoration: none;
+}
+main.users .button a button {
+  height: 2.5rem;
+  width: 8rem;
+  color: #fbfbfb;
+  font-size: 1.2rem;
+  background-color: #3b71ca;
+  border-radius: 5px;
+  border: none;
+}
+main.users .button a button:hover {
+  background-color: #638ed5;
+}
+main.users .button a button:hover:active {
+  box-shadow: #9fa6b2 0px 0px 3px 3px;
+}
+main.users table {
+  height: 50vh;
+  border: 1px solid #332d2d;
+  padding: 20px;
+}
+main.users table th,
+main.users table td {
+  padding: 7px 10px 10px 10px;
+}
+main.users table td.photo img {
+  height: 50px;
+  width: 50px;
+  object-fit: contain;
+  border-radius: 50%;
+  display: flex;
+  margin: 0 auto;
+}
+main.users table td.action button {
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  border: none;
+  margin: 1rem 0;
+  color: #fbfbfb;
+}
+main.users table td.action button.edit {
+  background-color: #14a44d;
+}
+main.users table td.action button.edit:hover {
+  background-color: #1ad162;
+}
+main.users table td.action button.edit:hover:active {
+  box-shadow: #9fa6b2 0px 0px 3px 3px;
+}
+main.users table td.action button.delete {
+  background-color: #dc4c64;
+}
+main.users table td.action button.delete:hover {
+  background-color: #e47789;
+}
+main.users table td.action button.delete:hover:active {
+  box-shadow: #9fa6b2 0px 0px 3px 3px;
+}
+main.users table td.action button i {
+  margin-left: 1rem;
+}
+main.users table th {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 1.3rem;
+  border-bottom: 2px solid #332d2d;
+  text-align: left;
+}
+main.users .info {
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+main.users .info a {
+  text-decoration: none;
+}
+main.users .info a:hover {
+  color: #3b71ca;
+}
+
+main.user {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 3rem;
+}
+main.user .nav {
+  text-align: start;
+  margin-bottom: 2rem;
+}
+main.user .nav a {
+  font-size: 1.2rem;
+  text-decoration: none;
+}
+main.user .nav a:hover {
+  color: #3b71ca;
+}
+main.user .container .image img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  border-radius: 50%;
+  display: flex;
+  margin: 0 auto;
+}
+main.user .container .data {
+  margin: 1rem 0;
+  display: flex;
+  justify-content: center;
+}
+main.user .container .data .profile {
+  width: 70%;
+  border: 1px solid #332d2d;
+  padding: 1.5rem;
+  box-shadow: #332d2d 0px 0px 5px 0px;
+  border-radius: 5px;
+}
+main.user .container .data .profile label {
+  font-weight: 500;
+}
+main.user .container .data .profile label p {
+  font-weight: normal;
+  margin: 10px;
+}
+main.user .container .data .profile .edit {
+  display: flex;
+  justify-content: flex-end;
+}
+main.user .container .data .profile .edit button {
+  padding: 0.5rem 1rem;
+  background-color: #14a44d;
+  border-radius: 5px;
+  border: none;
+  margin: 1rem 0;
+  color: #fbfbfb;
+}
+main.user .container .data .profile .edit button:hover {
+  background-color: #1ad162;
+}
+main.user .container .data .profile .edit button:hover:active {
+  box-shadow: #9fa6b2 0px 0px 3px 3px;
+}
+main.user .container .data .profile .edit button i {
+  margin-left: 1rem;
+}
+
+@supports (-moz-appearance: none) {
+  main.home .img {
+    width: 600px;
+  }
+}
+@media (max-width: 1024px) {
+  main.addUser .form form .input input {
+    width: 46%;
+  }
+  main.home .text {
+    width: 70%;
+    padding: 0 10px;
+  }
+  main.home .img {
+    padding: 0 10px;
+  }
+  main.home .img img {
+    width: 100%;
+  }
+}
+@media (min-width: 958px) {
+  main.users .accordions {
+    display: none;
+  }
+}
+@media (max-width: 958px) {
+  main.addUser {
+    justify-content: stretch;
+  }
+  main.addUser .form form .input input {
+    width: 43%;
+  }
+  main.user {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 3rem;
+    justify-content: stretch;
+  }
+  main.user .nav {
+    margin-bottom: 1.5rem;
+  }
+  main.users {
+    justify-content: stretch;
+  }
+  main.users .nav {
+    margin-bottom: 2rem;
+  }
+  main.users .button {
+    margin-bottom: 2rem;
+  }
+  main.users table {
+    margin-bottom: 2rem;
+  }
+  main.users table {
+    display: none;
+  }
+  main.users .accordions {
+    display: block;
+    /* Style the buttons that are used to open and close the accordion panel */
+    /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+    /* Style the accordion panel. Note: hidden by default */
+  }
+  main.users .accordions .accordion:after {
+    content: "➕"; /* Unicode character for "plus" sign (+) */
+    font-size: 13px;
+    color: #777;
+    float: right;
+    margin: 0 0.5rem 0 1em;
+  }
+  main.users .accordions .active:after {
+    content: "➖"; /* Unicode character for "minus" sign (-) */
+  }
+  main.users .accordions .accordion {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    transition: 0.4s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  main.users .accordions .accordion img {
+    margin: 0 1.5rem 0 1rem;
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 50%;
+  }
+  main.users .accordions .active,
+  main.users .accordions .accordion:hover {
+    background-color: #ccc;
+  }
+  main.users .accordions .panel {
+    padding: 0 18px;
+    background-color: white;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+  }
+  main.users .accordions .panel {
+    padding: 0 18px;
+    background-color: white;
+    overflow: hidden;
+  }
+  main.users .accordions .panel label {
+    font-weight: 500;
+  }
+  main.users .accordions .panel label p {
+    font-weight: normal;
+  }
+  main.users .accordions .panel .action {
+    margin-top: 1rem;
+  }
+  main.users .accordions .panel .action button {
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    border: none;
+    margin: 1rem 0;
+    color: #fbfbfb;
+  }
+  main.users .accordions .panel .action button.edit {
+    background-color: #14a44d;
+  }
+  main.users .accordions .panel .action button.edit:hover {
+    background-color: #1ad162;
+  }
+  main.users .accordions .panel .action button.edit:hover:active {
+    box-shadow: #9fa6b2 0px 0px 3px 3px;
+  }
+  main.users .accordions .panel .action button.delete {
+    background-color: #dc4c64;
+  }
+  main.users .accordions .panel .action button.delete:hover {
+    background-color: #e47789;
+  }
+  main.users .accordions .panel .action button.delete:hover:active {
+    box-shadow: #9fa6b2 0px 0px 3px 3px;
+  }
+  main.users .accordions .panel .action button i {
+    margin-left: 1rem;
+  }
+  footer .container {
+    flex-direction: column;
+  }
+  footer .container .logo {
+    margin: 0 0 1.5rem 0;
+  }
+  footer .container .connect {
+    margin: 1rem 0;
+  }
+}
+@media (min-width: 510px) {
+  header i.fa-solid {
+    display: none;
+  }
+}
+@media (max-width: 510px) {
+  .invisible {
+    display: none !important;
+  }
+  .show {
+    overflow-x: visible !important;
+  }
+  .live {
+    left: 0 !important;
+  }
+  header {
+    position: relative;
+    overflow-x: hidden;
+  }
+  header nav.nav {
+    position: absolute;
+    flex-direction: column;
+    background-color: #22447d;
+    width: 100%;
+    height: 100vh;
+    padding: 3rem 4rem;
+    justify-content: center;
+    top: 0px;
+    left: 100%;
+    transition: all 0.5s ease-in;
+  }
+  header nav.nav .fa-x {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+  }
+  header nav.nav .fa-x:hover:active {
+    color: #3b71ca;
+    font-size: 1.6rem;
+  }
+  header nav.nav div {
+    margin: 1rem 0;
+  }
+  header nav.nav div:hover {
+    background-color: inherit;
+  }
+  header nav.nav div:hover:active {
+    box-shadow: none;
+  }
+  header nav.nav div a {
+    font-size: 1.2rem;
+    color: #9fa6b2;
+  }
+  header nav.nav div a:hover:active {
+    font-size: 1.4rem;
+    color: #fbfbfb;
+  }
+  main.home {
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+  }
+  main.home .img {
+    display: none;
+  }
+  main.addUser .form form .input input {
+    width: 95%;
+  }
+}
+a {
+  cursor: pointer;
+}
+
+body {
+  width: 100% !important;
+  min-width: 360px !important;
+}
+
+header {
+  background-color: #3b71ca;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 50px;
+}
+header img {
+  width: 40px;
+  height: 40px;
+}
+header nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+header nav div {
+  margin: 0 10px;
+}
+header nav div a {
+  padding: 10px;
+  color: black;
+}
+header nav div a:hover {
+  background-color: #638ed5;
+  border-radius: 5px;
+  cursor: pointer;
+}
+header nav div a:hover:active {
+  box-shadow: #9fa6b2 0px 0px 3px 3px;
+}
+
+button,
+[type=file] {
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+}
+
+main {
+  height: fit-content;
+}
+
+footer {
+  padding: 20px 50px;
+  background-color: #332d2d;
+  display: flex;
+  flex-direction: column;
+}
+footer .copyright {
+  text-align: center;
+  letter-spacing: 2px;
+  font-size: 8px;
+  letter-spacing: 5px;
+}
+footer .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+footer .container .logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+footer .container .logo img {
+  width: 40px;
+  height: 40px;
+}
+footer .container .connect {
+  display: flex;
+}
+footer .container .connect a {
+  color: black;
+}
+footer .container .connect a i {
+  margin: 0 10px;
+  font-size: 20px;
+}
+footer .container .contact {
+  display: flex;
+  flex-direction: column;
+}
+footer .container .contact a {
+  color: black;
+}
+footer .container .contact p {
+  margin: 20px 0;
+}/*# sourceMappingURL=style.css.map */

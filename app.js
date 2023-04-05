@@ -1,11 +1,26 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-const Router = require("./routes/Routes");
-const expressSession = require("express-session");
 const app = express();
 const compression = require("compression");
 const expressHandlebars = require("express-handlebars");
+const nodemailer = require("nodemailer");
+require("dotenv").config();
+const cors = require("cors");
+const fs = require("fs");
+
+//////////////////////////////////////////
+
+// Create a transporter object to send emails
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.G_USERNAME, // Your email address
+        pass: process.env.G_PASSWORD, // Your email password
+    },
+});
+
+//////////////////////////////////////////
 
 // compress all responses
 app.use(compression());
@@ -31,6 +46,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static("public"));
+app.use(cors());
 
 ////////// ROUTERS ///////////////////////
 
@@ -45,12 +61,37 @@ app.use(function (req, res) {
 
 // error handler
 app.use(function (err, req, res, next) {
+    const errorTemplate = expressHandlebars
+        .create()
+        .handlebars.compile(fs.readFileSync("./views/error-email.hbs", "utf8"));
+
     // rendering it
-    console.log(err);
-    res.status(500).render("500", {
-        message: err.message,
-        error: req.app.get("env") === "development" ? err : {},
-    });
+    req.app.get("env") === "development"
+        ? console.log(err)
+        : // Send the error email
+          transporter.sendMail(
+              {
+                  from: process.env.G_USERNAME,
+                  to: process.env.G_USERNAME,
+                  subject: "Error Occurred",
+                  html: errorTemplate({
+                      errorMessage: err.message,
+                      errorDetails: `${err.name}
+            
+            
+            Error occurred at this line: ${err.line}`,
+                      errorStack: err.stack,
+                  }),
+              },
+              function (error, info) {
+                  if (error) {
+                      console.log(error);
+                  } else {
+                      console.log("Email sent: " + info.response);
+                  }
+              }
+          );
+    if (Object.keys(err).length !== 1) res.status(500).render("500");
 });
 
 module.exports = app;

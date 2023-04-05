@@ -21,18 +21,33 @@ main.addUser {
         form {
             width: 100%;
             .input {
+                .error {
+                    margin: 0 1rem;
+                    font-size: 14px;
+                    color: lighten(red, 10%);
+                }
                 input {
-                    padding: 0.4rem 0.8rem;
                     margin: 1rem;
-                    width: 46%;
+                    padding: 0.4rem 0.8rem;
+                    width: 100%;
                 }
                 margin: 20px 0;
             }
 
             .image {
+                .image-preview {
+                    width: 150px;
+                    height: 150px;
+                    img {
+                        display: none;
+                        height: 100%;
+                        width: 100%;
+                        object-fit: contain;
+                    }
+                }
                 input {
                     width: 100%;
-                    padding: 1rem;
+                    padding: 1rem 0;
                 }
             }
 

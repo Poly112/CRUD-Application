@@ -2,10 +2,6 @@ const fs = require("fs");
 const path = require("path");
 const router = require("express").Router();
 const User = require("../DB/model");
-const { pipeline, PassThrough, Transform } = require("stream");
-const { promisify } = require("util");
-const pipelineAsync = promisify(pipeline);
-// TODO Add the attribute enctype="multipart/form-data" to your form
 const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -42,18 +38,12 @@ class Validate {
         if (element === "_") {
             return;
         }
-        const allowedImageTypes = [
-            "image/jpeg",
-            "image/png",
-            "image/gif",
-            "image/jpg",
-        ];
-
-        if (!allowedImageTypes.includes(element.mimetype)) {
+        if (!element.mimetype.startsWith("image/")) {
             throw new Error("Incorrect format");
         }
-        if (element.size > 1024 * 100 * 2)
-            throw new Error("Maximum size exceeded");
+
+        if (element.size > 1024 * 1024 * 50)
+            throw new Error("File must be smaller tha n 5MB");
     }
 
     validLength(element) {
@@ -128,9 +118,18 @@ class Router {
 
         try {
             if (req.file) {
-                [firstName, lastName, req.file, email, bio].forEach(
-                    (element, index) => new Validate(element, index)
-                );
+                try {
+                    [firstName, lastName, req.file, email, bio].forEach(
+                        (element, index) => new Validate(element, index)
+                    );
+                } catch (error) {
+                    // FIXME:  Send it to the error handler where it will be sent to my email but not to the client
+                    next(error);
+                    return res.status(500).json({
+                        success: false,
+                        message: error.message,
+                    });
+                }
 
                 // Get the file extension from the uploaded file
                 const fileExt = path.extname(req.file.originalname);
@@ -158,12 +157,15 @@ class Router {
                 await User.create({ firstName, lastName, email, bio });
             }
 
-            return res.json({ Success: true });
+            return res.json({ success: true });
         } catch (error) {
-            return res.status(500).json({ Success: false, error });
+            // FIXME:  Send it to the error handler where it will be sent to my email but not to the client
+            next(error);
+            return res
+                .status(500)
+                .json({ success: false, message: error.message });
         }
     }
-
     async users(req, res, next) {
         try {
             const users = await User.findAll();
@@ -179,6 +181,10 @@ class Router {
                     if (fs.existsSync(photoPath)) {
                         // Read the file from the file system
                         const data = await fs.promises.readFile(photoPath);
+                        if (!data)
+                            return next(
+                                `Photo of ${lastName} ${firstName} Not Found`
+                            );
 
                         // Create a base64 encoded data URL for the image
                         const dataUrl = `data:image/jpeg;base64,${data.toString(
@@ -208,9 +214,13 @@ class Router {
                 })
             );
 
-            return res.json({ Success: true, users: userResponse });
+            return res.json({ success: true, users: userResponse });
         } catch (err) {
-            return res.status(500).json({ Success: false, err });
+            // FIXME:  Send it to the error handler where it will be sent to my email but not to the client
+            next(err);
+            return res
+                .status(500)
+                .json({ success: false, message: err.message });
         }
     }
 
@@ -220,7 +230,6 @@ class Router {
         try {
             const user = await User.findOne({
                 where: { email },
-                attributes: ["photo"],
             });
 
             if (user) {
@@ -237,12 +246,15 @@ class Router {
 
             await User.destroy({ where: { email } });
 
-            return res.json({ Success: true });
+            return res.json({ success: true });
         } catch (error) {
-            return next("Database Failure: Deleting Failed");
+            next(error);
+            return res
+                .status(500)
+                .json({ success: false, message: error.message });
         }
     }
-
+    // Server side
     async edit(req, res, next) {
         try {
             const { email } = req.query;
@@ -263,6 +275,7 @@ class Router {
 
                 try {
                     const data = await fs.promises.readFile(filePath);
+
                     const photoDataUrl = `data:image/png;base64,${data.toString(
                         "base64"
                     )}`;
@@ -274,7 +287,9 @@ class Router {
                         photo: photoDataUrl,
                     });
                 } catch (error) {
-                    return next(error);
+                    return next(
+                        `PHOTO NOT FOUND: Photo of ${lastName} ${firstName} Not Found`
+                    );
                 }
             } else {
                 return res.render("edit", {
@@ -289,6 +304,7 @@ class Router {
         }
     }
 
+    // Server side
     async user(req, res, next) {
         const { email } = req.query;
         let user;
@@ -322,7 +338,7 @@ class Router {
                         bio,
                     });
                 } catch (error) {
-                    return next(error);
+                    return next(`Photo of ${lastName} ${firstName} Not Found`);
                 }
             } else {
                 // Render the user view without an image
@@ -342,19 +358,31 @@ class Router {
             const alreadyExist = await User.findOne({
                 where: { email: oldEmail },
             });
-            console.log(alreadyExist);
             // If the user isn't part of the database send a 404 error
-            if (!alreadyExist) return next();
+            if (!alreadyExist)
+                return res.status(500).json({
+                    success: false,
+                    message: "User hasn't been created yet",
+                });
         } else {
-            return next();
+            return res
+                .status(500)
+                .json({ success: false, message: "User cannot be found" });
         }
 
         try {
             if (req.file) {
-                // Validate input fields
-                [firstName, lastName, req.file, email, bio].forEach(
-                    (element, index) => new Validate(element, index)
-                );
+                try {
+                    // Validate input fields
+                    [firstName, lastName, req.file, email, bio].forEach(
+                        (element, index) => new Validate(element, index)
+                    );
+                } catch (error) {
+                    return res.status(500).json({
+                        success: false,
+                        message: error.message,
+                    });
+                }
 
                 const photo = req.file.buffer;
 
@@ -391,12 +419,18 @@ class Router {
                     }
                 );
 
-                return res.json({ Success: true });
+                return res.json({ success: true });
             } else {
-                // Perform some validation
-                [firstName, lastName, "_", email, bio].forEach(
-                    (element, index) => new Validate(element, index)
-                );
+                try {
+                    // Perform validation
+                    [firstName, lastName, "_", email, bio].forEach(
+                        (element, index) => new Validate(element, index)
+                    );
+                } catch (error) {
+                    return res
+                        .status(500)
+                        .json({ success: false, message: error.message });
+                }
                 // No new file was uploaded, so just update the user data in the database
                 await User.update(
                     { firstName, lastName, email, bio },
@@ -407,10 +441,12 @@ class Router {
                     }
                 );
 
-                return res.json({ Success: true });
+                return res.json({ success: true });
             }
         } catch (error) {
-            return next(error);
+            return res
+                .status(500)
+                .json({ success: false, message: error.message });
         }
     }
 }

@@ -1,13 +1,14 @@
 <main class="addUser">
     <div class="nav">
         <p>
-            <a href="./index.html">Home</a>/
-            <a href="./user.html">User</a>
+            <a href="./index.html">Home</a>/<a
+                href="http://localhost:8080/edit?email={{email}}"
+            >Edit User</a>
         </p>
     </div>
     <div class="form">
         <form
-            action="./users.html"
+            action="http://localhost:8080/edit"
             id="edit"
             method="post"
             enctype="multipart/form-data"
@@ -16,28 +17,53 @@
                 <div class="name">
                     <input
                         placeholder="Enter Name"
-                        name="Name"
+                        name="firstName"
                         type="text"
-                        id="name"
+                        id="firstName"
+                        value="{{firstName}}"
                     />
-                    <div class="error error-name"></div>
+                    <div class="error error-firstName"></div>
+                    <input
+                        placeholder="Enter Name"
+                        name="lastName"
+                        type="text"
+                        id="lastName"
+                        value="{{lastName}}"
+                    />
+                    <div class="error error-lastName"></div>
                 </div>
                 <div class="email">
                     <input
                         placeholder="Enter Email"
-                        name="Email"
+                        name="email"
                         type="email"
                         id="email"
+                        value="{{email}}"
+                    />
+                    <input
+                        id="oldEmail"
+                        style="display: none;"
+                        name="oldEmail"
+                        type="email"
+                        value="{{email}}"
                     />
                     <div class="error error-email"></div>
                 </div>
             </div>
             <div class="image">
-                <div class="image-preview">
-                    <img src="" alt="" id="image" />
-                    <span>Image Preview</span>
+                <div
+                    style="background-color: transparent;"
+                    class="image-preview"
+                >
+                    <img
+                        style="display: block;"
+                        src="{{photo}}"
+                        alt=""
+                        id="image"
+                    />
+                    <span style="display: none;">Image Preview</span>
                 </div>
-                <!-- TODO type check if the content uploaded  is an image in your javascript -->
+                <!-- TODO: type check if the content uploaded  is an image in your javascript then preview it -->
                 <input
                     type="file"
                     name="photo"
@@ -48,23 +74,25 @@
             </div>
             <div class="textarea">
                 <textarea
-                    name="Bio"
+                    name="bio"
                     placeholder="Enter Bio"
                     id="bio"
                     cols="20"
                     rows="10"
-                ></textarea>
+                >{{bio}}</textarea>
                 <div class="error error-bio"></div>
             </div>
 
             <div class="button">
-                <a href="./users.html" id="edit-btn">
-                    <button type="submit">
-                        <i class="fas fa-circle-plus"></i>
-                        Add User
-                    </button>
-                </a>
+
+                <button type="submit">
+                    <i class="fas fa-circle-plus"></i>
+                    Add User
+                </button>
+
             </div>
         </form>
     </div>
 </main>
+<script defer src="/javascripts/form.js" defer></script>
+<script defer src="/javascripts/form.edit.js" defer></script>

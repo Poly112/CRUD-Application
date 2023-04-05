@@ -8,9 +8,14 @@
     <div class="container">
         <div class="image">
 
-            {{!TODO GET IMAGE FROM DATABASE }}
-
-            <img src="{{image}}" alt="" />
+            {{#if photo}}
+                <img src="{{photo}}" alt="User Profile Image" />
+            {{else}}
+                <img
+                    src="/images/pexels-pixabay-220453%20(1).jpg"
+                    alt="User Profile Image"
+                />
+            {{/if}}
 
             {{! /////////////// }}
         </div>
@@ -20,23 +25,21 @@
                     <label for="name">
                         Name
                         <p id="name">
-                            Nwaeke Polycarp Ikechukwu
+                            {{lastName}}
+                            {{firstName}}
                         </p>
                     </label><label for="mail">Email
-                        <p id="email">poly@gmail.com</p>
+                        <p id="email">{{email}}</p>
                     </label>
                 </div>
                 <div class="bio">
                     <label for="bio">Bio
-                        <p id="bio">
-                            Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit. Et, quia esse saepe quam sunt eveniet vel
-                            quasi numquam modi ratione?
-                        </p>
+                        <p id="bio">{{bio}}</p>
                     </label>
                 </div>
                 <div class="edit">
-                    <a href="http:localhost:8080/edit"><button type="button">
+                    {{!  TODO: Check whether you can use a relative link }}
+                    <a href="/edit?email={{email}}"><button type="button">
                             Edit
                             <i class="fas fa-edit"></i></button></a>
                 </div>

@@ -1,0 +1,31 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Error Email Template</title>
+        <style>
+            body { font-family: Arial, sans-serif; font-size: 14px; line-height:
+            1.6; color: #333; padding: 20px; } h1 { font-size: 24px;
+            margin-bottom: 20px; } .error-message { margin-top: 40px; padding:
+            20px; border: 1px solid #ccc; background-color: #f2dede; color:
+            #a94442; } .error-stack { margin-top: 20px; padding: 20px; border:
+            1px solid #ccc; background-color: #f7f7f7; } pre { margin-top: 0;
+            margin-bottom: 0; }
+        </style>
+    </head>
+    <body>
+        <h1>Error Occurred</h1>
+        <div class="error-message">
+            <p><strong>Error:</strong> {{errorMessage}}</p>
+            {{#if errorDetails}}
+                <p><strong>Details:</strong></p>
+                <pre>{{errorDetails}}</pre>
+            {{/if}}
+        </div>
+        {{#if errorStack}}
+            <div class="error-stack">
+                <p><strong>Stack Trace:</strong></p>
+                <pre>{{errorStack}}</pre>
+            </div>
+        {{/if}}
+    </body>
+</html>

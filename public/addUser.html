@@ -4,13 +4,18 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="./stylesheets/dist/css/style.css" />
+        <link rel="stylesheet" href="./stylesheets/sass/css/style.css" />
         <link
             rel="stylesheet"
             href="./stylesheets/fontawesome-free-6.1.2-web/css/all.min.css"
         />
-        <script src="./javascripts/index.js" defer></script>
-        <script src="./javascripts/script.js" type="module" defer></script>
+        <script
+            defer
+            src="./javascripts/form.addUser.js"
+            type="module"
+        ></script>
+        <script defer src="./javascripts/index.js" defer></script>
+        <script defer src="./javascripts/form.js" type="module" defer></script>
 
         <title>Add User</title>
     </head>
@@ -32,31 +37,43 @@
         <main class="addUser">
             <div class="nav">
                 <p>
-                    <a href="./index.html">Home</a>/
-                    <a href="./user.html">User</a>
+                    <a href="./index.html">Home</a>/<a href="./addUser.html"
+                        >Add User</a
+                    >
                 </p>
             </div>
             <div class="form" id="addUser">
                 <form
-                    action="./users.html"
+                    action="http://localhost:8080/addUser"
                     enctype="multipart/form-data"
                     method="post"
+                    id="addUser"
                 >
                     <div class="input">
                         <div class="name">
                             <input
-                                placeholder="Enter Name"
+                                placeholder="Enter Firstname"
                                 name="Name"
                                 type="text"
-                                id="name"
+                                required
+                                id="firstName"
                             />
-                            <div class="error error-name"></div>
+                            <div class="error error-firstName"></div>
+                            <input
+                                placeholder="Enter Lastname"
+                                name="Name"
+                                type="text"
+                                required
+                                id="lastName"
+                            />
+                            <div class="error error-lastName"></div>
                         </div>
                         <div class="email">
                             <input
                                 placeholder="Enter Email"
                                 name="Email"
                                 type="email"
+                                required
                                 id="email"
                             />
                             <div class="error error-email"></div>
@@ -67,7 +84,7 @@
                             <img src="" alt="" id="image" />
                             <span>Image Preview</span>
                         </div>
-                        <!-- TODO type check if the content uploaded  is an image in your javascript -->
+                        <!-- TODO: type check if the content uploaded  is an image in your javascript -->
                         <input
                             type="file"
                             name="photo"
@@ -78,9 +95,10 @@
                     </div>
                     <div class="textarea">
                         <textarea
-                            name="Bio"
+                            name="bio"
                             placeholder="Enter Bio"
                             id="bio"
+                            required
                             cols="20"
                             rows="10"
                         ></textarea>
@@ -88,11 +106,9 @@
                     </div>
 
                     <div class="button">
-                        <a href="./users.html" id="addUser-btn">
-                            <button type="submit">
-                                <i class="fas fa-circle-plus"></i> Add User
-                            </button>
-                        </a>
+                        <button type="submit">
+                            <i class="fas fa-circle-plus"></i> Add User
+                        </button>
                     </div>
                 </form>
             </div>

@@ -4,9 +4,10 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="./stylesheets/dist/css/style.css" />
-        <script src="./javascripts/index.js" defer></script>
-        <script src="./javascripts/script.js" type="module" defer></script>
+        <link rel="stylesheet" href="./stylesheets/sass/css/style.css" />
+        <script defer src="./javascripts/index.js" defer></script>
+
+        <script defer src="./javascripts/users.js" type="module" defer></script>
         <link
             rel="stylesheet"
             href="./stylesheets/fontawesome-free-6.1.2-web/css/all.min.css"
@@ -27,7 +28,6 @@
                 <div class="users"><a href="./users.html">Users</a></div>
             </nav>
         </header>
-
         <main class="users">
             <div class="nav">
                 <p>
@@ -42,88 +42,18 @@
                     </button>
                 </a>
             </div>
-            <div class="accordions">
-                <div class="single">
-                    <button class="accordion">
-                        <p>Nwaeke Polycarp Ikechukwu</p>
-                        <img
-                            src="./images/pexels-pixabay-220453 (1).jpg"
-                            alt=""
-                        />
-                    </button>
-                    <div class="panel">
-                        <label
-                            >Email
-                            <p id="email click">poly@gmail.com</p></label
-                        >
-                        <label
-                            >Bio
-                            <p>
-                                Lorem ipsum dolor sit amet consectetur
-                                adipisicing elit. Ratione vel temporibus omnis
-                                iusto vero sunt.
-                            </p>
-                        </label>
-                        <div class="action">
-                            <a href="#" class="delete-btn">
-                                <button type="button" class="delete">
-                                    Delete
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </a>
-                            <a
-                                href="http://localhost:8080/edit"
-                                class="edit-btn"
-                            >
-                                <button type="button" class="edit">
-                                    Edit
-                                    <i class="fas fa-plus-square"></i>
-                                </button>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <table>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Photo</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Action</th>
-                </tr>
-                <tr id="click">
-                    <td>1</td>
-                    <td class="photo">
-                        <img
-                            src="./images/pexels-pixabay-220453 (1).jpg"
-                            alt=""
-                        />
-                    </td>
-                    <td>Nwaeke Polycarp Ikechukwu</td>
-                    <td id="email">poly@gmail.com</td>
-                    <td class="action">
-                        <a href="#" class="delete-btn">
-                            <button type="button" class="delete">
-                                Delete
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </a>
-                        <a href="./addUser.html " class="edit-btn">
-                            <button type="button" class="edit">
-                                Edit
-                                <i class="fas fa-plus-square"></i>
-                            </button>
-                        </a>
-                    </td>
-                </tr>
-            </table>
+            <!-- TODO: Delete start -->
+            <!-- FIXME: Use javascript to dynamically render it -->
+
+            <div class="accordions"></div>
+            <table></table>
+
+            <!-- TODO: Delete Stop -->
+
             <div class="info">
                 <p>
                     <a class="prev" href="#">Prev</a>
-                    <span class="page">1</span>/<span class="totalPages"
-                        >5</span
-                    >
+                    <span class="page"></span>/<span class="totalPages"></span>
                     <a href="#" class="next">Next</a>
                 </p>
             </div>
