@@ -13,14 +13,22 @@ const fs = require("fs");
 
 // Create a transporter object to send emails
 const transporter = nodemailer.createTransport({
-    service: "gmail",
+    service: "Gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
     auth: {
         user: process.env.G_USERNAME, // Your email address
         pass: process.env.G_PASSWORD, // Your email password
     },
 });
 
-//////////////////////////////////////////
+///////////////////////////////////////////////////////////
+
+// ! Disable x-powered-by in all your project for security reasons
+app.disable("x-powered-by");
+
+///////////////////////////////////////////////////////////
 
 // compress all responses
 app.use(compression());
@@ -71,14 +79,14 @@ app.use(function (err, req, res, next) {
         : // Send the error email
           transporter.sendMail(
               {
-                  from: process.env.G_USERNAME,
+                  from: '"Polycarp" <polycarpnwaeke4@gmail.com> ',
                   to: process.env.G_USERNAME,
                   subject: "Error Occurred",
+                  generateTextFromHtml: true,
                   html: errorTemplate({
                       errorMessage: err.message,
                       errorDetails: `${err.name}
-            
-            
+                      
             Error occurred at this line: ${err.line}`,
                       errorStack: err.stack,
                   }),

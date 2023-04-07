@@ -168,6 +168,7 @@ class Router {
     }
     async users(req, res, next) {
         try {
+            throw new Error("Bitches");
             const users = await User.findAll();
             const userResponse = await Promise.all(
                 users.map(async (user) => {
