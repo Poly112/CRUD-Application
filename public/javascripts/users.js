@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////
 
-const next = document.querySelector(".prev");
-const prev = document.querySelector(".next");
+const next = document.querySelector(".next");
+const prev = document.querySelector(".prev");
 const table = document.querySelector("table");
 const accordions = document.querySelector(".accordions");
 let beginning = 0;
@@ -28,86 +28,155 @@ function getUsersAndRender() {
 
         if (data.users.length < 1) return;
         let toBeRendered = data.users.slice(beginning, end);
-        let sliced = render(
-            toBeRendered,
-            table.style.display !== "none" ? "table" : ""
-        );
+        let slicedTable = render(toBeRendered, "table");
+        let slicedAccordions = render(toBeRendered);
 
-        if (table.style.display !== "none") {
-            table.innerHTML =
-                `<tr>
+        table.innerHTML =
+            `<tr>
                         <th scope="col">#</th>
                         <th scope="col">Photo</th>
                         <th scope="col">Name</th>
                         <th scope="col">Email</th>
                         <th scope="col">Action</th>
-                    </tr>` + sliced;
-        } else {
-            accordions.innerHTML = sliced;
-        }
+                    </tr>` + slicedTable;
+
+        accordions.innerHTML = slicedAccordions;
     } catch (error) {
         return alert("Error ocurred while rendering");
     }
 
     // This script will only run for /users page
     // Buttons
-    const deleteButton = document.querySelector("a.delete-btn");
-    const editButton = document.querySelector("a.edit-btn");
-    const userClick = document.querySelector("td#email");
 
-    function userClickHandler() {
-        if (table.style.display == "none") {
-            window.location.href = `http://localhost:8080/user?email=${userClick.textContent.trim()}`;
-        } else {
-            window.location.href = `http://localhost:8080/user?email=${userClick.textContent.trim()}`;
-        }
-    }
+    const deleteButtons = document.querySelectorAll("a.delete-btn");
+    const editButtons = document.querySelectorAll("a.edit-btn");
 
-    async function deleteClick(e) {
-        e.preventDefault();
-        const email = deleteButton.parentElement.parentElement
-            .querySelector("td#email")
-            .innerText.trim();
+    const userClicks = document.querySelectorAll(".click");
 
-        try {
-            const res = await fetch(
-                `http://localhost:8080/user?email=${email}`,
-                {
-                    method: "DELETE",
-                }
-            );
+    deleteButtons.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            deleteClick(e, btn);
+        });
+    });
+    editButtons.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            editClick(e, btn);
+        });
+    });
+    userClicks.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            userClickHandler(e, btn);
+        });
+    });
 
-            const data = await res.json();
-
-            if (data.success) {
-                deleteButton.parentElement.parentElement.innerHTML = "";
-                // TODO: Re-render the page
-                getUserData();
-                getUsersAndRender();
+    function userClickHandler(e, btn) {
+        if (e.target.classList.contains("click")) {
+            if (table.style.display === "none") {
+                return (window.location.href = `http://localhost:8080/user?email=${btn
+                    .querySelector("#email")
+                    .textContent.trim()}`);
             } else {
-                throw new Error("Delete unsuccessful");
+                return (window.location.href = `http://localhost:8080/user?email=${btn
+                    .querySelector("#email")
+                    .textContent.trim()}`);
             }
-        } catch (err) {
-            alert(err.message);
         }
     }
 
-    function editClick(e) {
+    async function deleteClick(e, btn) {
         e.preventDefault();
-        const email = document
-            .querySelector("main.users")
-            .querySelector("#email").innerText;
-        if (e.target.tagName.toUpperCase() === "A") {
-            e.target.href = `http://localhost:8080/edit?email=${email}`;
-            e.target.click();
+        btn.setAttribute("disabled", true);
+
+        if (
+            e.target.tagName.toUpperCase() === "A" ||
+            e.target.tagName.toUpperCase() === "BUTTON"
+        ) {
+            let email;
+            if (e.target.tagName.toUpperCase() === "A")
+                email = e.target.parentElement.parentElement
+                    .querySelector("#email")
+                    .innerText.trim();
+            if (e.target.tagName.toUpperCase() === "BUTTON")
+                email = e.target.parentElement.parentElement.parentElement
+                    .querySelector("#email")
+                    .innerText.trim();
+
+            try {
+                const res = await fetch(
+                    `http://localhost:8080/user?email=${email}`,
+                    {
+                        method: "DELETE",
+                    }
+                );
+
+                const data = await res.json();
+
+                if (data.success) {
+                    if (e.target.tagName.toUpperCase() === "A")
+                        return (e.target.parentElement.parentElement.innerHTML =
+                            "");
+                    if (e.target.tagName.toUpperCase() === "BUTTON")
+                        return (e.target.parentElement.parentElement.parentElement.parentElement.innerHTML =
+                            "");
+
+                    // TODO: Re-render the page
+                    getUserData();
+                    getUsersAndRender();
+                } else {
+                    throw new Error("Delete unsuccessful");
+                }
+            } catch (err) {
+                btn.removeAttribute("disabled");
+                return alert(err.message);
+            }
+        }
+    }
+
+    function editClick(e, btn) {
+        e.preventDefault();
+        btn.setAttribute("disabled", true);
+        try {
+            if (
+                e.target.tagName.toUpperCase() === "A" ||
+                e.target.tagName.toUpperCase() === "BUTTON"
+            ) {
+                let email;
+                if (e.target.tagName.toUpperCase() === "A") {
+                    email = e.target.parentElement.parentElement
+                        .querySelector("#email")
+                        .innerText.trim();
+                    window.location.href = `http://localhost:8080/edit?email=${email}`;
+                }
+                if (e.target.tagName.toUpperCase() === "BUTTON") {
+                    email = e.target.parentElement.parentElement.parentElement
+                        .querySelector("#email")
+                        .innerText.trim();
+
+                    window.location.href = `http://localhost:8080/edit?email=${email}`;
+                }
+            }
+        } catch (error) {
+            btn.removeAttribute("disabled");
+            return alert(error.message);
         }
     }
 
     prev.addEventListener("click", prevClick);
     next.addEventListener("click", nextClick);
-    userClick.addEventListener("click", userClickHandler);
-    editButton.addEventListener("click", editClick);
-    deleteButton.addEventListener("click", deleteClick);
+
+    const accordion = document.querySelectorAll(".accordion");
+
+    accordion.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            btn.classList.toggle("active");
+            const panel = btn.nextElementSibling;
+            if (panel.style.maxHeight) {
+                panel.style.maxHeight = null;
+            } else {
+                panel.style.maxHeight = panel.scrollHeight + "px";
+            }
+        });
+    });
 }
 
 function render(array, elt) {
@@ -154,7 +223,7 @@ function render(array, elt) {
             <img src="${photo}" alt=""/>
           </button>
           <div class="panel">
-            <label>Email<p id="email click">${email}</p></label>
+            <label class="click">Email<p  id="email">${email}</p></label>
             <label>Bio<p>${bio}</p></label>
             <div class="action">
               <a href="#" class="delete-btn">
@@ -185,7 +254,7 @@ function getTotalPages(num) {
 
 function prevClick(e) {
     e.preventDefault();
-    if (pageNum == 1) {
+    if (pageNum === 1) {
         alert("First Page reached");
     } else {
         pageNum--;
@@ -208,11 +277,6 @@ function nextClick(e) {
 }
 
 window.addEventListener("load", async () => {
-    await getUserData();
-    getUsersAndRender();
-});
-
-window.addEventListener("resize", async () => {
     await getUserData();
     getUsersAndRender();
 });
